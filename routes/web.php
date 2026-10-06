@@ -1,38 +1,23 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductController;
 use App\Http\Controllers\MahasiswaController;
 
-// Rute untuk halaman utama (welcome)
 Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/mahasiswa', [MahasiswaController::class, 'index'])->name('mahasiswa.index');
 
-// Rute untuk input usia
-Route::get('/produk/input-usia', function () {
-    return view('produk.input-usia');
-})->name('produk.input-usia');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
-// Rute untuk produk
-Route::get('/produk', function () {
-    return view('produk.index');
-})->middleware('checkage')->name('produk.index');
-
-
-Route::get('/produk/detail', function () {
-    return view('produk.detail');
-})->middleware('checkage')->name('produk.detail');
-
-
-Route::get('/produk/harga', function () {
-    return view('produk.harga');
-})->middleware('checkage')->name('produk.harga');
-
-// Rute untuk data product
-Route::get('/products', [ProductController::class, 'index']);
-
-// Rute untuk data mahasiswa
-Route::resource('mahasiswa', MahasiswaController::class);
+require __DIR__.'/auth.php';

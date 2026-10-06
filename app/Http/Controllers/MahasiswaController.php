@@ -9,12 +9,15 @@ class MahasiswaController extends Controller
 {
     public function index()
     {
+        // $mahasiswa = Mahasiswa::all();
+        // // Mengembalikan ke view (atau response JSON untuk testing)
+        // return response()->json([
+        //     'status' => 'success',
+        //     'data' => $mahasiswa
+        // ]);
+
         $mahasiswa = Mahasiswa::all();
-        // Mengembalikan ke view (atau response JSON untuk testing)
-        return response()->json([
-            'status' => 'success',
-            'data' => $mahasiswa
-        ]);
+        return view('mahasiswa.index', compact('mahasiswa'));
     }
 
     // Menyimpan data baru
@@ -25,9 +28,9 @@ class MahasiswaController extends Controller
             'nama' => 'required',
             'jurusan' => 'required',
         ]);
-        
+
         $data = Mahasiswa::create($validated);
-        
+
         return response()->json([
             'message' => 'Data mahasiswa berhasil ditambahkan!',
             'data' => $data
@@ -38,7 +41,7 @@ class MahasiswaController extends Controller
     public function show($id)
     {
         $mahasiswa = Mahasiswa::findOrFail($id);
-        
+
         return response()->json($mahasiswa);
     }
 }
