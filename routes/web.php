@@ -8,7 +8,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/mahasiswa', [MahasiswaController::class, 'index'])->name('mahasiswa.index');
+Route::get('/mahasiswa', [MahasiswaController::class, 'index'])->middleware('auth')->name('mahasiswa.index');
+Route::resource('mahasiswa', MahasiswaController::class);
 
 Route::get('/dashboard', function () {
     return view('dashboard');
