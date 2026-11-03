@@ -21,16 +21,31 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name'        => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price'       => 'required|numeric',
-            'stock'       => 'required|integer',
-        ]);
+    // 1. Simpan SEMUA hasil validasi ke variabel $validated
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'price' => 'required|numeric|min:0',
+        'stock' => 'required|integer|min:0',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
 
-        Product::create($request->all());
+    // 2. Tambahkan data gambar ke dalam array $validated jika ada file yang diunggah
+    if ($request->hasFile('image') && $request->file('image')->isValid()) {
+        $file = $request->file('image');
+        $filename = time() . '_' . $file->getClientOriginalName();
 
-        return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan!');
+        // Pindahkan file ke folder storage/app/public/products
+        $file->move(public_path('storage/products'), $filename);
+
+        // Tambahkan path gambar ke array yang akan disimpan
+        $validated['image'] = 'products/' . $filename;
+    }
+
+    // 3. Simpan seluruh data (teks + gambar) ke database
+    Product::create($validated);
+
+    return redirect()->route('products.index')->with('success', 'Produk berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -41,17 +56,37 @@ class ProductController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name'        => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'price'       => 'required|numeric',
-            'stock'       => 'required|integer',
-        ]);
+    $product = Product::findOrFail($id);
 
-        $product = Product::findOrFail($id);
-        $product->update($request->all());
+    $validated = $request->validate([
+        'name' => 'required|string|max:100',
+        'price' => 'required|numeric',
+        'description' => 'nullable|string',
+        'stock' => 'required|integer|min:0',
+        'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
 
-        return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui!');
+    if ($request->hasFile('image') && $request->file('image')->isValid()) {
+        // Hapus gambar lama jika ada
+        if ($product->image && file_exists(public_path('storage/' . $product->image))) {
+            unlink(public_path('storage/' . $product->image));
+        }
+
+        $file = $request->file('image');
+        $filename = time() . '_' . $file->getClientOriginalName();
+        $destination = public_path('storage/products');
+
+        if (!file_exists($destination)) {
+            mkdir($destination, 0755, true);
+        }
+
+        $file->move($destination, $filename);
+        $validated['image'] = 'products/' . $filename;
+    }
+
+    $product->update($validated);
+
+    return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui!');
     }
 
     public function destroy($id)

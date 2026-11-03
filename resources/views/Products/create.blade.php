@@ -9,7 +9,7 @@
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <form action="{{ route('products.store') }}" method="POST">
+                    <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
 
                         {{-- Input Nama Produk --}}
@@ -46,6 +46,13 @@
                             @error('stock')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
+                        </div>
+
+                        {{-- Input Gambar --}}
+                        <div class="mb-4">
+                            <label>Gambar Produk</label>
+                            <input type="file" name="image" accept="image/*" class="w-full border rounded p-2">
+                            @error('image') <small class="text-red-600">{{ $message }}</small> @enderror
                         </div>
 
                         {{-- Tombol Aksi Simpan & Batal --}}

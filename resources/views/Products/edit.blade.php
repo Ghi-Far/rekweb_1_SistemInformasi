@@ -9,7 +9,7 @@
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <form action="{{ route('products.update', $product->id) }}" method="POST">
+                    <form action="{{ route('products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -47,6 +47,23 @@
                             @error('stock')
                                 <p style="color: #dc2626; font-size: 12px; margin-top: 4px;">{{ $message }}</p>
                             @enderror
+                        </div>
+
+                        {{-- Input Gambar --}}
+                        <div class="mb-4">
+                            <label>Gambar Produk</label>
+                            <input type="file" name="image" accept="image/*" class="w-full border rounded p-2">
+                            @error('image') <small class="text-red-600">{{ $message }}</small> @enderror
+
+                            {{-- Preview gambar lama --}}
+                            @if ($product->image)
+                                <div class="mt-3">
+                                    <p class="text-sm text-gray-600">Gambar saat ini:</p>
+                                    <img src="{{ asset('storage/' . $product->image) }}" alt="Gambar Produk" width="120" class="rounded shadow">
+                                </div>
+                            @else
+                                <p class="text-gray-500 text-sm mt-2">Belum ada gambar produk.</p>
+                            @endif
                         </div>
 
                         {{-- Tombol Aksi --}}

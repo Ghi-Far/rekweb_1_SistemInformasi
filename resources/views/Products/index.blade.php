@@ -37,6 +37,7 @@
                                 <th class="p-2 text-left border">Deskripsi</th>
                                 <th class="p-2 text-left border">Harga</th>
                                 <th class="p-2 text-left border">Stok</th>
+                                <th class="p-2 text-left border">Gambar Product</th>
                                 {{-- Kolom Aksi hanya tampil untuk Admin --}}
                                 @if(auth()->user()?->role === 'admin')
                                     <th class="p-2 text-center border">Aksi</th>
@@ -51,6 +52,14 @@
                                     <td class="p-2 border">{{ $product->description ?? '-' }}</td>
                                     <td class="p-2 border">Rp {{ number_format($product->price, 0, ',', '.') }}</td>
                                     <td class="p-2 border">{{ $product->stock }}</td>
+                                    <td class="p-2 border">
+                                        @if ($product->image)
+                                            <img src="{{ asset('storage/' . $product->image) }}" alt="Gambar Produk" width="80" class="rounded shadow">
+                                        @else
+                                            <span class="text-gray-500">Belum ada gambar</span>
+                                        @endif
+                                    </td>
+
                                     {{-- Tombol Edit & Hapus hanya tampil untuk Admin --}}
                                     @if(auth()->user()?->role === 'admin')
                                         <td class="p-2 border text-center">
@@ -58,6 +67,10 @@
                                                 {{-- Tombol Edit --}}
                                                 <a href="{{ route('products.edit', $product->id) }}" style="display: inline-block; background-color: #f59e0b; color: #ffffff; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 600; text-decoration: none;">
                                                     Edit
+                                                </a>
+                                                {{-- Tombol Detail --}}
+                                                <a href="{{ route('products.show', $product->id) }}"style="background-color: #0284c7 !important; color: #ffffff !important; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; display: inline-block; text-decoration: none; border: 1px solid #0369a1; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                                                    Detail
                                                 </a>
                                                 {{-- Tombol Hapus --}}
                                                 <form action="{{ route('products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus produk ini?');" style="margin: 0;">
